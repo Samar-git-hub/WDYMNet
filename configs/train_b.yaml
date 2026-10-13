@@ -1,0 +1,60 @@
+# WDYMNet Stage B — Fine-tuning (partial speech encoder + LoRA text encoder)
+seed: 1337
+
+model:
+  proj_dim: 256
+  n_heads: 4
+  n_layers: 2
+  ff_dim: 512
+  dropout: 0.1
+  num_emotions: 7
+  num_emphasis: 3
+
+  modality_dropout:
+    text_p: 0.3
+    audio_p: 0.3
+
+  # Fine-tuning specifics
+  finetune:
+    speech_encoder_layers: 3  # unfreeze top N transformer blocks
+    speech_encoder_lr: 2.0e-5
+    lora:
+      r: 8
+      alpha: 16
+      dropout: 0.1
+      target_modules: ["query", "value"]
+      lr: 2.0e-4
+
+training:
+  optimizer: "adamw"
+  lr: 5.0e-4  # for heads
+  weight_decay: 0.01
+  batch_size: 8
+  grad_accumulation_steps: 4
+  max_epochs: 3
+  early_stopping_patience: 3
+  early_stopping_metric: "val_macro_f1"   # mean of emph F1, emotion macro-F1, sarcasm AUC
+  oversample: {mustardpp: 4}   # MUStARD++ is ~10x smaller than MELD; without this the sarcasm head barely trains
+  scheduler: "cosine"
+  warmup_ratio: 0.05
+  fp16: true
+  gradient_clip: 1.0
+  max_utterance_len_s: 10.0
+
+loss:
+  emph_weight: 1.0
+  emo_weight: 1.0
+  sarc_weight: 1.0
+  unimodal_weight: 0.3
+  sparsity_weight: 0.01
+
+data:
+  max_utterance_len_s: 10.0
+  datasets: ["meld", "mustardpp", "hpc"]
+  sampling: "round_robin"
+
+checkpoint:
+  save_dir: "results/checkpoints"
+  save_best: true
+  metric: "val_macro_f1"
+  init_from: "results/checkpoints/stage_a_best.pt"

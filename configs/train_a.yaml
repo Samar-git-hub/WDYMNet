@@ -1,0 +1,47 @@
+# WDYMNet Stage A — Train fusion model on cached features (frozen encoders)
+seed: 1337
+
+model:
+  proj_dim: 256
+  n_heads: 4
+  n_layers: 2
+  ff_dim: 512
+  dropout: 0.1
+  num_emotions: 7
+  num_emphasis: 3
+
+  # Modality dropout during training
+  modality_dropout:
+    text_p: 0.3
+    audio_p: 0.3
+
+training:
+  optimizer: "adamw"
+  lr: 1.0e-3
+  weight_decay: 0.01
+  batch_size: 32
+  max_epochs: 15
+  early_stopping_patience: 3
+  early_stopping_metric: "val_macro_f1"   # mean of emph F1, emotion macro-F1, sarcasm AUC
+  oversample: {mustardpp: 4}   # MUStARD++ is ~10x smaller than MELD; without this the sarcasm head barely trains
+  scheduler: "cosine"
+  warmup_ratio: 0.05
+  fp16: false   # fp32: the 2.6M-param fusion model on cached features is cheap, and fp16/bf16 overflowed to NaN in long runs
+  gradient_clip: 1.0
+
+loss:
+  emph_weight: 1.0
+  emo_weight: 1.0
+  sarc_weight: 1.0
+  unimodal_weight: 0.3
+  sparsity_weight: 0.01
+
+data:
+  max_utterance_len_s: 30.0
+  datasets: ["meld", "mustardpp", "hpc"]
+  sampling: "round_robin"
+
+checkpoint:
+  save_dir: "results/checkpoints"
+  save_best: true
+  metric: "val_macro_f1"

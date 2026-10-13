@@ -1,0 +1,16 @@
+flowchart LR
+  mic[16 kHz speech] --> vad[Silero VAD] --> asr[faster-whisper small<br/>words + timestamps]
+  vad --> e2v[emotion2vec+ base<br/>50 Hz frames, 768-d]
+  asr --> rob[RoBERTa-base + LoRA<br/>mean of subwords]
+  asr --> pros[prosody: dur, F0, RMS, pauses]
+  e2v -->|mean+max per word| fuse
+  rob --> fuse
+  pros --> fuse
+  fuse[gated fusion d=256<br/>+ 2-layer Transformer] --> emph[Emphasis head<br/>3 classes, supervised: HPC]
+  fuse --> emo[Emotion head<br/>per-word logits + MIL attention: MELD]
+  fuse --> sarc[Sarcasm head<br/>per-word logits + MIL attention: MUStARD++]
+  e2v -.audio-only.-> ae[audio emotion head]
+  rob -.text-only.-> te[text emotion head]
+  ae --> inc[incongruity = JS div / ln 2]
+  te --> inc
+  inc --> sarc

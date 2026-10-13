@@ -1,0 +1,65 @@
+# WDYMNet Data Configuration
+seed: 1337
+sample_rate: 16000
+
+paths:
+  data_root: "data"
+  cache_root: "data/cache"      # per-utterance word features (Stage A)
+  cache_mid: "data/cache_mid"   # emotion2vec hidden state entering the last 3 blocks (Stage B)
+  manifests: "data/manifests"
+  splits: "splits"
+  results: "results"
+
+# ---------- MELD ----------
+meld:
+  csv_url: "https://github.com/declare-lab/MELD"
+  raw_url: "http://web.eecs.umich.edu/~mihalcea/downloads/MELD.Raw.tar.gz"
+  hf_dataset: "declare-lab/MELD"
+  clip_pattern: "dia{dialogue_id}_utt{utterance_id}.mp4"
+  emotion_labels:
+    neutral: 0
+    surprise: 1
+    fear: 2
+    sadness: 3
+    joy: 4
+    disgust: 5
+    anger: 6
+  class_weights: [4.0, 15.0, 15.0, 3.0, 1.0, 6.0, 3.0]
+
+# ---------- MUStARD++ ----------
+mustardpp:
+  repo_url: "https://github.com/cfiltnlp/MUStARD_Plus_Plus"
+  gdrive_folder: "https://drive.google.com/drive/folders/1kUdT2yU7ERJ5KdauObTj5oQsBlSrvTlW"
+  split_ratios: [0.70, 0.15, 0.15]  # train/val/test (speaker-grouped)
+
+# ---------- Helsinki Prosody Corpus ----------
+hpc:
+  repo_url: "https://github.com/Helsinki-NLP/prosody"
+  libritts_base_url: "https://www.openslr.org/resources/60"
+  libritts_splits:
+    - "dev-clean"
+    - "test-clean"
+  prominence_labels: [0, 1, 2]  # none / prominent / highly prominent
+
+# ---------- emotion2vec → MELD mapping ----------
+emotion2vec_to_meld:
+  angry: anger      # 0 → 6
+  disgusted: disgust  # 1 → 5
+  fearful: fear       # 2 → 2
+  happy: joy          # 3 → 4
+  neutral: neutral    # 4 → 0
+  sad: sadness        # 6 → 3
+  surprised: surprise # 7 → 1
+  # 'other' (5) and 'unknown' (8) are ignored
+
+# ---------- Processing ----------
+alignment:
+  min_word_match_ratio: 0.80  # whisper fallback: drop utterance if < 80% words align
+  max_clip_s: 30.0            # longer clips are dropped (emotion2vec attention is O(T^2))
+  min_mms_score: 0.1          # MMS_FA: drop utterance if mean word score is below this
+  frame_rate: 50  # emotion2vec frames per second
+
+prosody:
+  f0_fmin: 65
+  f0_fmax: 400
+  # z-normalize within each utterance

@@ -1,0 +1,6 @@
+{
+  "sarcasm_threshold": 0.981,
+  "emotion_threshold": 0.3,
+  "sarcasm_val_false_alarm": 0.1001606855918586,
+  "sarcasm_val_recall": 0.14814814814814814
+}

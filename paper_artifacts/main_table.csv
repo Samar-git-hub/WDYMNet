@@ -1,0 +1,9 @@
+Model,Emph acc 3-way,Emph acc 2-way,Emph F1 3-way,Emotion wF1 (MELD),Sarcasm macro-F1 (MUStARD++),Sarcasm AUC
+B0,,,,46.2,,
+B1,,,,49.3,57.0,63.3
+B2,,,,43.7,,
+ours-A,72.1,84.3,69.0,46.7,56.6,65.3
+ours-B (not selected on val),71.2,83.1,67.5,46.7,60.8,68.5
+ours -prosody,59.9,77.2,50.3,43.8,57.0,64.8
+ours -incongruity,64.1,78.7,62.5,45.0,52.8,54.3
+ours -modality dropout,64.8,81.0,62.3,46.1,52.6,64.7

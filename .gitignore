@@ -1,0 +1,43 @@
+# Data (never commit audio/video)
+data/
+personal_eval/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Model checkpoints (only the deployed demo model is committed, ~11 MB)
+results/checkpoints/*
+*.pt
+*.pth
+!results/checkpoints/stage_a_best.pt
+*.bin
+!wdymnet/**/*.py
+
+# Tensorboard
+runs/
+
+# Misc
+*.log
+*.tmp

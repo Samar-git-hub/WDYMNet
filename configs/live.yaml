@@ -1,0 +1,36 @@
+# WDYMNet Live Demo Configuration
+seed: 1337
+
+asr:
+  model_size: "small"
+  device: "cuda"
+  compute_type: "int8_float16"
+  language: "en"
+  beam_size: 1   # greedy: much faster than the default beam of 5
+
+vad:
+  threshold: 0.5
+  min_speech_duration_ms: 250
+  min_silence_duration_ms: 300
+
+model:
+  # first existing checkpoint wins (Stage B if trained, else Stage A)
+  checkpoints: ["results/checkpoints/stage_b_best.pt", "results/checkpoints/stage_a_best.pt"]
+  device: "cuda"
+
+inference:
+  # word-tag display thresholds (S6 re-tunes emotion/sarcasm on validation → results/thresholds.json)
+  emotion_threshold: 0.3
+  sarcasm_threshold: 0.5
+
+rewrite:
+  # pretrained instruction-tuned LLM (used as-is) that turns transcript + voice cues into a corrected
+  # sentence and its intended meaning. Runs on CTranslate2 (~2.7 GB VRAM, converted once into ct2_dir)
+  enabled: true
+  model: "Eslzzyl/Qwen3-4B-Instruct-2507-AWQ"   # Qwen3-4B-Instruct-2507, 4-bit AWQ build
+  ct2_dir: "data/models/qwen3-4b-2507-awq-ct2"
+  max_new_tokens: 128
+
+ui:
+  server_port: 7860
+  share: false
