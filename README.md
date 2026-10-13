@@ -1,4 +1,4 @@
-# WDYMNet — *What Do You Mean?*
+# WDYMNet — What Do You Mean?
 ### Word-level detection of emphasis, emotion and sarcasm in speech
 
 WDYMNet listens to live microphone speech and returns a **tone-tagged transcript**: every word gets an
